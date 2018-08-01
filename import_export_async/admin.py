@@ -1,4 +1,5 @@
 from django.contrib import admin as django_admin
+
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
@@ -23,7 +24,8 @@ class AsyncExportMixin(admin.ExportMixin):
             report = import_export_async.models.Report.objects.create(
                 queryset, export_format)
             import_export_async.tasks.generate_report_by_pk.delay(report.pk)
-            return redirect('/admin/')
+
+            return redirect(report.get_admin_url())
 
         context = self.get_export_context_data()
 

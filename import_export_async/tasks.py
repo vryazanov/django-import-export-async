@@ -2,6 +2,7 @@ import uuid
 
 from celery import shared_task
 from django.contrib import admin
+from django.core.files.base import ContentFile
 
 import import_export_async.models
 
@@ -12,14 +13,18 @@ def generate_report_by_pk(pk):
     model = report.content_type.model_class()
 
     admin_class = admin.site._registry[model]
-    admin_instance = admin_class()
 
-    formats = admin_instance.get_export_formats()
+    formats = admin_class.get_export_formats()
     file_format = formats[report.export_format]()
 
-    export_data = admin_instance.get_export_data(
-        file_format, model.objects.all())
+    export_data = admin_class.get_export_data(
+        file_format, model.objects.all().iterator(), request=None)
+
+    name = f'{model._meta.app_label}-{model._meta.model_name}-{uuid.uuid4()}'
 
     report.report.save(
-        name=f'test.{file_format.get_extension()}',
-        content=export_data)
+        name=f'{name}.{file_format.get_extension()}', 
+        content=ContentFile(export_data), save=False)
+
+    report.status = report.PROCESSED
+    report.save()
