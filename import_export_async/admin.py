@@ -1,3 +1,4 @@
+from django.contrib import admin as django_admin
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 from import_export import admin
@@ -28,3 +29,6 @@ class AsyncExportMixin(admin.ExportMixin):
         'Export selected %(verbose_name_plural)s')
 
     actions = [export_admin_action]
+
+
+django_admin.site.register(import_export_async.models.Report)
