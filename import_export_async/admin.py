@@ -1,4 +1,5 @@
 from django.shortcuts import redirect
+from django.utils.translation import ugettext_lazy as _
 from import_export import admin
 
 import import_export_async.models
