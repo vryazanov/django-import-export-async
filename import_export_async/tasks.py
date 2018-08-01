@@ -18,7 +18,7 @@ def generate_report_by_pk(pk):
     file_format = formats[report.export_format]()
 
     export_data = admin_class.get_export_data(
-        file_format, model.objects.all().iterator(), request=None)
+        file_format, model.objects.all(), request=None)
 
     name = f'{model._meta.app_label}-{model._meta.model_name}-{uuid.uuid4()}'
 
