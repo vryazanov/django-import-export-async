@@ -5,7 +5,7 @@ with open('requirements.in') as f:
 
 setup(
     name='django-import-export-async',
-    version='0.1,
+    version='0.1',
     description='Async way to load reports using django-import-export package.',
     author='Vadim Ryazanov',
     license='BSD License',
