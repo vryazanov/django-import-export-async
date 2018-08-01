@@ -5,7 +5,7 @@ import import_export_async.models
 import import_export_async.tasks
 
 
-class AsyncExportActionMixin(admin.ExportActionMixin):
+class AsyncExportMixin(admin.ExportMixin):
     def has_export_permission(self, *args, **kwargs):
         return True
 
