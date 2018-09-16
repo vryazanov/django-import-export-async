@@ -20,6 +20,9 @@ def generate_report_by_pk(pk):
     export_data = admin_class.get_export_data(
         file_format, model.objects.all(), request=None)
 
+    if not isinstance(export_data, bytes):
+        export_data = export_data.encode('utf-8')
+
     name = f'{model._meta.app_label}-{model._meta.model_name}-{uuid.uuid4()}'
 
     report.report.save(

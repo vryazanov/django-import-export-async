@@ -33,7 +33,7 @@ class Report(models.Model):
     objects = ReportManager()
 
     def __str__(self):
-        return str(self.content_type)
+        return f'{self.content_type} - {self.get_status_display()}'
 
     def get_admin_url(self):
         return reverse('admin:import_export_async_report_change', 
