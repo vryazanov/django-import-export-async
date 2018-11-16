@@ -9,7 +9,10 @@ class ReportManager(models.Manager):
     def create(self, queryset, export_format):
         return super().create(
             export_format=export_format,
-            content_type=ContentType.objects.get_for_model(queryset.model),
+            content_type=ContentType.objects.get_for_model(
+                queryset.model,
+                for_concrete_model=False,
+            ),
         )
 
 
