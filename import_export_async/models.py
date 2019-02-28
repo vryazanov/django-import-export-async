@@ -28,7 +28,7 @@ class Report(models.Model):
     status = models.CharField(
         choices=STATUS_CHOICES, default=WAITING, max_length=32)
     export_format = models.PositiveIntegerField()
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
 
     report = models.FileField(upload_to='async_reports/')
     created = models.DateTimeField(auto_now_add=True)
