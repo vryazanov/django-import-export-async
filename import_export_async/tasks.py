@@ -10,24 +10,35 @@ import import_export_async.models
 @shared_task
 def generate_report_by_pk(pk):
     report = import_export_async.models.Report.objects.get(pk=pk)
-    model = report.content_type.model_class()
+    report.commit_status(report.STARTED)
 
-    admin_class = admin.site._registry[model]
+    try:
 
-    formats = admin_class.get_export_formats()
-    file_format = formats[report.export_format]()
+        model = report.content_type.model_class()
 
-    export_data = admin_class.get_export_data(
-        file_format, model.objects.all(), request=None)
+        admin_class = admin.site._registry[model]
 
-    if not isinstance(export_data, bytes):
-        export_data = export_data.encode('utf-8')
+        formats = admin_class.get_export_formats()
+        file_format = formats[report.export_format]()
 
-    name = f'{model._meta.app_label}-{model._meta.model_name}-{uuid.uuid4()}'
+        report.commit_status(report.EXPORTING)
+        export_data = admin_class.get_export_data(
+            file_format, model.objects.all(), request=None)
 
-    report.report.save(
-        name=f'{name}.{file_format.get_extension()}', 
-        content=ContentFile(export_data), save=False)
+        if not isinstance(export_data, bytes):
+            report.commit_status(report.ENCODING)
+            export_data = export_data.encode('utf-8')
 
-    report.status = report.PROCESSED
-    report.save()
+        name =\
+            f'{model._meta.app_label}-{model._meta.model_name}-{uuid.uuid4()}'
+
+        report.commit_status(report.SAVING)
+        report.report.save(
+            name=f'{name}.{file_format.get_extension()}',
+            content=ContentFile(export_data), save=False)
+    except Exception as e:
+        report.failed_on = report.status
+        report.commit_status(report.ERROR)
+        raise
+    else:
+        report.commit_status(report.PROCESSED)
