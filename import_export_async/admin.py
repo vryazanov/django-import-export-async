@@ -38,4 +38,14 @@ class AsyncExportMixin(admin.ExportMixin):
         return TemplateResponse(request, [self.export_template_name],
                                 context)
 
-django_admin.site.register(import_export_async.models.Report)
+
+@django_admin.register(import_export_async.models.Report)
+class ReportAdmin(django_admin.ModelAdmin):
+    readonly_fields = (
+        'status',
+        'export_format',
+        'content_type',
+        'failed_on',
+        'report',
+        'created',
+    )
